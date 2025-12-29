@@ -356,6 +356,25 @@ feature_skip with feature_id={id}
 
 ---
 
+## EMAIL INTEGRATION (DEVELOPMENT MODE)
+
+When building applications that require email functionality (password resets, email verification, notifications, etc.), you typically won't have access to a real email service or the ability to read email inboxes.
+
+**Solution:** Configure the application to log emails to the terminal instead of sending them.
+
+- Password reset links should be printed to the console
+- Email verification links should be printed to the console
+- Any notification content should be logged to the terminal
+
+**During testing:**
+1. Trigger the email action (e.g., click "Forgot Password")
+2. Check the terminal/server logs for the generated link
+3. Use that link directly to verify the functionality works
+
+This allows you to fully test email-dependent flows without needing external email services.
+
+---
+
 ## IMPORTANT REMINDERS
 
 **Your Goal:** Production-quality application with all tests passing
