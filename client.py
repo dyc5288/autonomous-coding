@@ -93,14 +93,21 @@ BUILTIN_TOOLS = [
     "Bash",
 ]
 
+# System prompts for different languages
+SYSTEM_PROMPTS = {
+    "en": "You are an expert full-stack developer building a production-quality web application.",
+    "zh": "你是一位专业的全栈开发工程师，正在构建一个生产级别的 Web 应用程序。请使用中文进行所有交流和说明，代码注释也尽量使用中文。",
+}
 
-def create_client(project_dir: Path, model: str):
+
+def create_client(project_dir: Path, model: str, lang: str = "zh"):
     """
     Create a Claude Agent SDK client with multi-layered security.
 
     Args:
         project_dir: Directory for the project
         model: Claude model to use
+        lang: Language for agent responses ("zh" for Chinese, "en" for English)
 
     Returns:
         Configured ClaudeSDKClient (from claude_agent_sdk)
@@ -158,10 +165,13 @@ def create_client(project_dir: Path, model: str):
     # Get environment settings from Claude CLI config (for custom API endpoints like MiniMax)
     claude_env = get_claude_env_settings()
 
+    # Get system prompt for the selected language
+    system_prompt = SYSTEM_PROMPTS.get(lang, SYSTEM_PROMPTS["zh"])
+
     return ClaudeSDKClient(
         options=ClaudeAgentOptions(
             model=model,
-            system_prompt="You are an expert full-stack developer building a production-quality web application.",
+            system_prompt=system_prompt,
             setting_sources=["project"],  # Enable skills, commands, and CLAUDE.md from project dir
             max_buffer_size=10 * 1024 * 1024,  # 10MB for large Playwright screenshots
             allowed_tools=[

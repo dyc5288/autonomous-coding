@@ -77,6 +77,14 @@ Authentication:
         help=f"Claude model to use (default: {DEFAULT_MODEL})",
     )
 
+    parser.add_argument(
+        "--lang",
+        type=str,
+        default="zh",
+        choices=["zh", "en"],
+        help="Language for agent responses: zh (Chinese) or en (English). Default: zh",
+    )
+
     return parser.parse_args()
 
 
@@ -105,6 +113,7 @@ def main() -> None:
                 project_dir=project_dir,
                 model=args.model,
                 max_iterations=args.max_iterations,
+                lang=args.lang,
             )
         )
     except KeyboardInterrupt:

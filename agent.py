@@ -103,6 +103,7 @@ async def run_autonomous_agent(
     project_dir: Path,
     model: str,
     max_iterations: Optional[int] = None,
+    lang: str = "zh",
 ) -> None:
     """
     Run the autonomous agent loop.
@@ -111,12 +112,14 @@ async def run_autonomous_agent(
         project_dir: Directory for the project
         model: Claude model to use
         max_iterations: Maximum number of iterations (None for unlimited)
+        lang: Language for agent responses ("zh" for Chinese, "en" for English)
     """
     print("\n" + "=" * 70)
     print("  AUTONOMOUS CODING AGENT DEMO")
     print("=" * 70)
     print(f"\nProject directory: {project_dir}")
     print(f"Model: {model}")
+    print(f"Language: {lang}")
     if max_iterations:
         print(f"Max iterations: {max_iterations}")
     else:
@@ -162,7 +165,7 @@ async def run_autonomous_agent(
         print_session_header(iteration, is_first_run)
 
         # Create client (fresh context)
-        client = create_client(project_dir, model)
+        client = create_client(project_dir, model, lang)
 
         # Choose prompt based on session type
         # Pass project_dir to enable project-specific prompts
