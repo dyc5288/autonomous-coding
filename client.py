@@ -16,6 +16,30 @@ from claude_agent_sdk.types import HookMatcher
 from security import bash_security_hook
 
 
+def get_claude_env_settings() -> dict[str, str]:
+    """
+    Read environment settings from ~/.claude/settings.json.
+    
+    This allows using custom API endpoints (like MiniMax) configured in Claude CLI settings.
+    Returns a dict of environment variables to pass to the SDK.
+    """
+    env_settings = {}
+    settings_path = Path.home() / ".claude" / "settings.json"
+    
+    if settings_path.exists():
+        try:
+            with open(settings_path, "r") as f:
+                settings = json.load(f)
+                # Extract env section if present
+                if "env" in settings and isinstance(settings["env"], dict):
+                    env_settings = settings["env"]
+                    print(f"Loaded {len(env_settings)} environment variables from {settings_path}")
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"Warning: Failed to read Claude settings: {e}")
+    
+    return env_settings
+
+
 # Feature MCP tools for feature/test management
 FEATURE_MCP_TOOLS = [
     "mcp__features__feature_get_stats",
@@ -131,6 +155,9 @@ def create_client(project_dir: Path, model: str):
     print("   - Project settings enabled (skills, commands, CLAUDE.md)")
     print()
 
+    # Get environment settings from Claude CLI config (for custom API endpoints like MiniMax)
+    claude_env = get_claude_env_settings()
+
     return ClaudeSDKClient(
         options=ClaudeAgentOptions(
             model=model,
@@ -161,5 +188,6 @@ def create_client(project_dir: Path, model: str):
             max_turns=1000,
             cwd=str(project_dir.resolve()),
             settings=str(settings_file.resolve()),  # Use absolute path
+            env=claude_env,  # Pass API configuration (ANTHROPIC_BASE_URL, ANTHROPIC_API_KEY, etc.)
         )
     )
